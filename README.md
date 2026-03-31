@@ -20,7 +20,7 @@ The generated Phase 1 session is intentionally constrained to planning output on
 
 ## Phase 2 generator script
 
-`ralph.generate_phase2` bootstraps `.ralph/ralph.sh` when missing, then runs it to regenerate Phase 2 artifacts in one pass. The script ensures baseline Ralph files exist:
+`ralph.generate_phase2` scaffolds `.ralph/phase2.sh` and creates the baseline Phase 2 artifacts:
 
 - `.ralph/specs/*.md`
 - `.ralph/fix_plan.md`
@@ -28,11 +28,11 @@ The generated Phase 1 session is intentionally constrained to planning output on
 - `.ralph/logs/progress.txt`
 - `.ralph/logs/learnings.md`
 
-- Run directly: `bash ./.ralph/ralph.sh`
+- Run directly: `bash ./.ralph/phase2.sh`
 - Run via MCP tool: `ralph.generate_phase2`
 
 `ralph.generate_phase2` performs a lightweight schema validation of `.ralph/config.json`.
-If the file exists and is invalid, the tool fails fast before running the generator.
+If the file exists and is invalid, the tool reports validation errors without executing the script.
 
 ## Install
 
@@ -77,7 +77,7 @@ If VS Code reports `${workspaceFolder}` cannot be resolved, open the repository 
 - `.ralph/fix_plan.md` is the task source of truth.
 - Blocked tasks live under a dedicated heading: `## Blocked` (or `## Blocked Tasks`).
 - Phase 1 planning documents live under `.github/plans/`.
-- Phase 2 generator script lives at `.ralph/ralph.sh` and is auto-created by `ralph.generate_phase2` when absent.
+- Phase 2 generator script lives at `.ralph/phase2.sh` and is auto-created by `ralph.generate_phase2` when absent.
 
 ## Dev tests
 
