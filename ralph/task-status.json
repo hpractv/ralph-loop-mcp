@@ -1,0 +1,81 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Populate requirements.md document",
+      "description": "Write the authoritative product requirements for ralph-loop-mcp into requirements.md. This file is the source of truth the loop reads to understand what to build; it is currently empty, which breaks the loop premise.",
+      "status": "done",
+      "devIterations": 1,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T13:36:24.701Z"
+    },
+    {
+      "id": 2,
+      "title": "Add Phase 3 section to README",
+      "description": "README.md documents Phase 1 and Phase 2 generator scripts but has no Phase 3 section. Add a 'Phase 3 generator script' section documenting ralph.generate_phase3, the phase3.sh output path, and the artifacts it creates; also update the Conventions section to mention phase3.sh.",
+      "status": "done",
+      "devIterations": 3,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T15:58:22.450Z"
+    },
+    {
+      "id": 3,
+      "title": "Test replaceFixPlanMd merge logic",
+      "description": "The replaceFixPlanMd function in workflow.ts handles complex carry-forward of completed and blocked tasks across fix_plan replacements but has no test coverage. Add a dedicated test suite covering merge, carry-forward, and no-preserve modes.",
+      "status": "done",
+      "devIterations": 1,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T23:25:48.768Z"
+    },
+    {
+      "id": 4,
+      "title": "Test nextTask and task lifecycle tools",
+      "description": "The nextTask, setTaskStatus, blockTask, and unblockTask tool functions in tools.ts are untested at the tool level. Add integration tests that write a fix_plan.md to a temp repo, call these tools via process.cwd mock, and verify the resulting file state.",
+      "status": "done",
+      "devIterations": 1,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T22:54:37.004Z"
+    },
+    {
+      "id": 5,
+      "title": "Test readState tool function",
+      "description": "The readState tool aggregates config, tasks, specs, PRD tail, and log tails into a single state snapshot but has no test coverage. Add tests for missing artifacts, populated state, and config validation propagation.",
+      "status": "done",
+      "devIterations": 3,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T23:19:03.844Z"
+    },
+    {
+      "id": 6,
+      "title": "Test validateRalphConfig logic",
+      "description": "validateRalphConfig is a key config-schema guard used in both readState and generatePhase2, but is not tested in isolation. Add unit tests for valid config, missing required fields, invalid types, and invalid paths.projectPlan values.",
+      "status": "done",
+      "devIterations": 1,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T23:35:33.398Z"
+    },
+    {
+      "id": 7,
+      "title": "Test logging and epic plan tools",
+      "description": "appendProgress, appendLearning, and writeEpicPlan tool functions in tools.ts are untested at the tool interface level. Add tests verifying timestamp formatting in progress entries, section heading in learning entries, and epic_plan.md write behavior.",
+      "status": "inProgress",
+      "devIterations": 0,
+      "createdAt": "2026-03-31T02:09:47.007Z",
+      "updatedAt": "2026-03-31T23:38:38.276Z"
+    }
+  ],
+  "currentTaskNum": 7,
+  "totalLLMCalls": 17,
+  "maxLLMCalls": 500,
+  "nextTask": {
+    "taskId": 7,
+    "content": "Now I have all the context I need. Let me produce the output.\n\n```json\n[\n  { \"id\": 7, \"title\": \"Test logging and epic plan tools\", \"description\": \"appendProgress, appendLearning, and writeEpicPlan tool functions in tools.ts are untested at the tool interface level. Add tests verifying timestamp formatting in progress entries, section heading in learning entries, and epic_plan.md write behavior.\", \"status\": \"backlog\" }\n]\n```\n\n---\n\n## Task 7 -- Test Logging and Epic Plan Tools\n\n### What and Why\n\nThree exported tool functions in `src/tools.ts` lack any tool-level test coverage:\n\n- `appendProgress(entry: string)` -- appends a timestamped line to `.ralph/logs/progress.txt`. The timestamp must be ISO-8601 UTC without milliseconds: `[YYYY-MM-DDTHH:MM:SSZ]` (NFR-06 / FR-14).\n- `appendLearning(title: string, body: string)` -- appends a new `## <timestamp>: <title>` section to `.ralph/logs/learnings.md` (FR-15).\n- `writeEpicPlan(content: string)` -- writes or replaces `.ralph/epic_plan.md` (FR-16).\n\nThe existing `tests/logging_and_allowlist.test.ts` tests only the underlying `appendText` helper from `workflow.ts`, not these exported tool functions. The goal of this task is to add a dedicated test file at `tests/logging_tools.test.ts` that exercises each tool function at the tool-call boundary using a temp repo directory and `vi.spyOn(process, \"cwd\")`, matching the conventions established in `tests/task_lifecycle.test.ts`.\n\n---\n\n### Implementation Guidance\n\n**File to create:** `tests/logging_tools.test.ts`\n\n**Imports needed:**\n\n```ts\nimport { describe, expect, it, afterEach, vi } from \"vitest\";\nimport fs from \"node:fs/promises\";\nimport path from \"node:path\";\nimport os from \"node:os\";\nimport { appendProgress, appendLearning, writeEpicPlan } from \"../src/tools.js\";\n```\n\n**Helper to create a temp repo with `.ralph/logs/` pre-created:**\n\n```ts\nasync function makeTempRepo(): Promise<string> {\n  const dir = await fs.mkdtemp(path.join(os.tmpdir(), \"ralph-logging-\"));\n  await fs.writeFile(path.join(dir, \"package.json\"), \"{}\", \"utf8\");\n  await fs.mkdir(path.join(dir, \".ralph\", \"logs\"), { recursive: true });\n  return dir;\n}\n```\n\nEach `describe` block must use an `afterEach` that restores mocks and removes the temp dir, matching the pattern in `task_lifecycle.test.ts`.\n\n---\n\n**appendProgress -- test cases:**\n\n| Case | Setup | Assertion |\n| --- | --- | --- |\n| Appends timestamped entry to existing log file | Create an empty `progress.txt`, call `appendProgress(\"started work\")` | File content matches `/^\\[\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z\\] started work\\n$/` |\n| Trims whitespace from entry | Call with `\"  padded  \"` | Stored line contains `] padded\\n` (no leading/trailing spaces in the entry portion) |\n| Creates file if absent | Do not create `progress.txt` beforehand | After call, file exists and content matches timestamp pattern |\n| Accumulates multiple entries | Call twice | File contains two lines, each with a `[...Z]` prefix |\n| Returns `{ ok: true }` | Call with any string | Return value is `{ ok: true }` |\n\nTimestamp format regex: `/^\\[\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z\\]/`. Do NOT assert the exact timestamp value (it is time-dependent); only assert the format and the entry text.\n\n---\n\n**appendLearning -- test cases:**\n\n| Case | Assertion |\n| --- | --- |\n| Writes section heading with timestamp | File content matches `/## \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z:/` |\n| Heading includes the title | Heading line includes the exact title string |\n| Body appears after heading | Content after the heading contains the body text |\n| Trims whitespace from title and body | Leading/trailing spaces stripped from both |\n| Creates learnings.md if absent | File is created when it does not exist |\n| Accumulates sections | Two calls produce two `##` headings in the file |\n| Returns `{ ok: true }` | Return value is `{ ok: true }` |\n\n---\n\n**writeEpicPlan -- test cases:**\n\n| Case | Assertion |\n| --- | --- |\n| Writes content to `.ralph/epic_plan.md` | File at `.ralph/epic_plan.md` matches written content (with trailing newline) |\n| Adds trailing newline when absent | Content without `\\n` at end -- file ends with `\\n` |\n| Preserves trailing newline when present | Content already ending in `\\n` -- file does not double the newline |\n| Overwrites existing file | Write once, then write again with different content -- second content wins |\n| Creates `.ralph/` directory if absent | Remove `.ralph/` dir, call `writeEpicPlan` -- file is created successfully |\n| Returns `{ ok: true, path: \".ralph/epic_plan.md\" }` | Exact return value shape |\n\n---\n\n**Conventions to follow (from `task_lifecycle.test.ts`):**\n\n- Use `vi.spyOn(process, \"cwd\").mockReturnValue(tmpDir)` before each tool call.\n- Call `vi.restoreAllMocks()` in `afterEach`.\n- Each `describe` block has its own `let tmpDir: string` and cleans up with `fs.rm(tmpDir, { recursive: true, force: true })`.\n- Use `expect(result.ok).toBe(true)` (not `toBeTruthy()`).\n- All tests are `async it` blocks.\n\n---\n\n### Testing Steps\n\nAfter implementing `tests/logging_tools.test.ts`, run:\n\n```bash\nnpm run --prefix C:\\Users\\ROY28095\\mcp\\ralph_loop_mcp test\n```\n\n- Confirm `logging_tools.test.ts` appears in Vitest output with all tests green.\n- Confirm no regressions in the 6 other test files.\n- Exit code must be 0.\n\n---\n\n### Acceptance Criteria\n\n- `tests/logging_tools.test.ts` exists and is automatically discovered by Vitest.\n- No changes to `src/` files are required (all three tool functions are already exported).\n- At minimum 14 test cases pass across three `describe` blocks: 5 for `appendProgress`, 7 for `appendLearning`, and 6 for `writeEpicPlan`.\n- Timestamp format in `appendProgress` entries is validated by regex against NFR-06 (`[YYYY-MM-DDTHH:MM:SSZ]`), not by exact value.\n- Timestamp format in `appendLearning` headings is validated by regex.\n- All tests use `vi.spyOn(process, \"cwd\")` and clean up temp dirs in `afterEach`.\n- `npm run test` exits 0 with no regressions across the full suite.\n\n---\n\n## Remaining Planned Tasks\n- Test logging and epic plan tools\n\n<task-id>7</task-id>\n\nAll 130 tests pass (18 new tests in `logging_tools.test.ts`, 5 for `appendProgress`, 7 for `appendLearning`, 6 for `writeEpicPlan`). No regressions.\n\n",
+    "updatedAt": "2026-03-31T23:38:38.293Z"
+  },
+  "feedback": {
+    "taskId": 7,
+    "content": "",
+    "updatedAt": "2026-03-31T23:38:38.309Z"
+  },
+  "lastUpdated": "2026-03-31T23:38:38.309Z"
+}
