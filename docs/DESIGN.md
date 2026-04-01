@@ -32,6 +32,8 @@ The **LLM loop** (bash + `copilot`, or a human driving the IDE) stays **outside*
 
 [ralph-gui](https://github.com/izep/ralph-gui) documents: **requirements** → **epic** → **planning** → **Dev** → **QA**, with persisted state.
 
+> **Note on "requirements"**: The repository root `requirements.md` documents this MCP package's own product requirements; consumer repos use `.ralph/prd.md` (written via `ralph.write_prd`) as their plan source of truth.
+
 | ralph-gui | ralph-loop-mcp |
 | --- | --- |
 | `requirements.md` (SoT) | `.ralph/prd.md` (+ optional `.github/plans/*` as draft input) |
