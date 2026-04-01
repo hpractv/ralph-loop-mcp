@@ -27,6 +27,16 @@ describe("upsertSpec guard", () => {
 
     await expect(upsertSpec(".ralph/specs/progress.txt", "x")).rejects.toThrow(/reserved filename/i);
     await expect(upsertSpec(".ralph/specs/learnings.md", "x")).rejects.toThrow(/reserved filename/i);
+    await expect(upsertSpec(".ralph/specs/progress.md", "x")).rejects.toThrow(/reserved filename/i);
+    await expect(upsertSpec(".ralph/specs/learnings.txt", "x")).rejects.toThrow(/reserved filename/i);
+  });
+
+  it("rejects paths outside .ralph/specs/", async () => {
+    tmpDir = await makeTempRepo();
+    vi.spyOn(process, "cwd").mockReturnValue(tmpDir);
+
+    await expect(upsertSpec(".ralph/prd.md", "# PRD")).rejects.toThrow(/specs/i);
+    await expect(upsertSpec(".ralph/fix_plan.md", "# Tasks")).rejects.toThrow(/specs/i);
   });
 
   it("allows normal spec markdown files", async () => {
@@ -39,5 +49,26 @@ describe("upsertSpec guard", () => {
     expect(result.path).toBe(".ralph/specs/event-pipeline.md");
     const content = await fs.readFile(path.join(tmpDir, ".ralph", "specs", "event-pipeline.md"), "utf8");
     expect(content).toContain("# Event Pipeline");
+  });
+
+  it("adds trailing newline when spec content has none (NFR-05)", async () => {
+    tmpDir = await makeTempRepo();
+    vi.spyOn(process, "cwd").mockReturnValue(tmpDir);
+
+    await upsertSpec(".ralph/specs/my-spec.md", "# Spec without newline");
+
+    const content = await fs.readFile(path.join(tmpDir, ".ralph", "specs", "my-spec.md"), "utf8");
+    expect(content.endsWith("\n")).toBe(true);
+  });
+
+  it("does not double newline when spec content already ends with one (NFR-05)", async () => {
+    tmpDir = await makeTempRepo();
+    vi.spyOn(process, "cwd").mockReturnValue(tmpDir);
+
+    await upsertSpec(".ralph/specs/my-spec.md", "# Spec with newline\n");
+
+    const content = await fs.readFile(path.join(tmpDir, ".ralph", "specs", "my-spec.md"), "utf8");
+    expect(content).toBe("# Spec with newline\n");
+    expect(content.endsWith("\n\n")).toBe(false);
   });
 });

@@ -275,6 +275,10 @@ const tools: Tool[] = [
   },
 ];
 
+export function normalizeToolName(raw: string): string {
+  return raw.replace(/^ralph_/, "ralph.");
+}
+
 function jsonResult(value: unknown) {
   return {
     content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
@@ -298,7 +302,7 @@ async function main() {
     // Cursor (and some other clients) serialize dot-namespaced tool names with
     // underscores (ralph_generate_phase2) instead of dots (ralph.generate_phase2).
     // Normalise here so both variants work without duplicating every case.
-    const name = rawName.replace(/^ralph_/, "ralph.");
+    const name = normalizeToolName(rawName);
 
     switch (name) {
       case "ralph.generate_phase1":

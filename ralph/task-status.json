@@ -1,81 +1,72 @@
 {
   "tasks": [
     {
-      "id": 1,
-      "title": "Populate requirements.md document",
-      "description": "Write the authoritative product requirements for ralph-loop-mcp into requirements.md. This file is the source of truth the loop reads to understand what to build; it is currently empty, which breaks the loop premise.",
+      "id": 14,
+      "title": "Fix README factual errors and gaps",
+      "description": "Update README.md to fix the phase3-feedback path (logs/phase3-feedback.md), add links to requirements.md and docs/DESIGN.md, document standalone vs nested repo layouts, clarify that cwd in MCP host config points at the target project, and note that the target repo must define ci and test:e2e scripts.",
       "status": "done",
       "devIterations": 1,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T13:36:24.701Z"
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:51:26.684Z"
     },
     {
-      "id": 2,
-      "title": "Add Phase 3 section to README",
-      "description": "README.md documents Phase 1 and Phase 2 generator scripts but has no Phase 3 section. Add a 'Phase 3 generator script' section documenting ralph.generate_phase3, the phase3.sh output path, and the artifacts it creates; also update the Conventions section to mention phase3.sh.",
-      "status": "done",
-      "devIterations": 3,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T15:58:22.450Z"
-    },
-    {
-      "id": 3,
-      "title": "Test replaceFixPlanMd merge logic",
-      "description": "The replaceFixPlanMd function in workflow.ts handles complex carry-forward of completed and blocked tasks across fix_plan replacements but has no test coverage. Add a dedicated test suite covering merge, carry-forward, and no-preserve modes.",
-      "status": "done",
-      "devIterations": 1,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T23:25:48.768Z"
-    },
-    {
-      "id": 4,
-      "title": "Test nextTask and task lifecycle tools",
-      "description": "The nextTask, setTaskStatus, blockTask, and unblockTask tool functions in tools.ts are untested at the tool level. Add integration tests that write a fix_plan.md to a temp repo, call these tools via process.cwd mock, and verify the resulting file state.",
-      "status": "done",
-      "devIterations": 1,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T22:54:37.004Z"
-    },
-    {
-      "id": 5,
-      "title": "Test readState tool function",
-      "description": "The readState tool aggregates config, tasks, specs, PRD tail, and log tails into a single state snapshot but has no test coverage. Add tests for missing artifacts, populated state, and config validation propagation.",
-      "status": "done",
-      "devIterations": 3,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T23:19:03.844Z"
-    },
-    {
-      "id": 6,
-      "title": "Test validateRalphConfig logic",
-      "description": "validateRalphConfig is a key config-schema guard used in both readState and generatePhase2, but is not tested in isolation. Add unit tests for valid config, missing required fields, invalid types, and invalid paths.projectPlan values.",
-      "status": "done",
-      "devIterations": 1,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T23:35:33.398Z"
-    },
-    {
-      "id": 7,
-      "title": "Test logging and epic plan tools",
-      "description": "appendProgress, appendLearning, and writeEpicPlan tool functions in tools.ts are untested at the tool interface level. Add tests verifying timestamp formatting in progress entries, section heading in learning entries, and epic_plan.md write behavior.",
+      "id": 15,
+      "title": "Add Vitest globalSetup for integration tests",
+      "description": "Add a Vitest globalSetup module that runs tsc once before the suite so dist/index.js exists when integration tests spawn the server. Update vitest config and package.json as needed so npm test remains a single command.",
       "status": "inProgress",
       "devIterations": 0,
-      "createdAt": "2026-03-31T02:09:47.007Z",
-      "updatedAt": "2026-03-31T23:38:38.276Z"
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:54:39.252Z"
+    },
+    {
+      "id": 16,
+      "title": "Add stdio MCP happy-path integration tests",
+      "description": "Add tests/mcp_stdio.integration.test.ts that spawns dist/index.js with the MCP SDK stdio client against a temp repo, asserts tools/list returns all expected tool names, and exercises the generate_phase1 + read_state chain verifying artifacts on disk.",
+      "status": "backlog",
+      "devIterations": 0,
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:54:39.233Z"
+    },
+    {
+      "id": 17,
+      "title": "Add full-cycle Phase 1-2-3 E2E test",
+      "description": "Extend the stdio integration suite with a full-cycle test on a dummy project: Phase 1 (generate_phase1, write_prd), Phase 2 (generate_phase2, upsert_spec, replace_fix_plan), Phase 3 (generate_phase3, next_task, run_verification, set_task_status, next_task returns empty).",
+      "status": "backlog",
+      "devIterations": 0,
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:54:39.233Z"
+    },
+    {
+      "id": 18,
+      "title": "Add negative MCP integration tests",
+      "description": "Add negative/edge-case MCP tests via the same stdio spawn pattern: unknown tool name, generate_phase3 without fix_plan.md present, write_plan with a path outside .github/plans/, and read_file for a missing file; assert structured error responses in each case.",
+      "status": "backlog",
+      "devIterations": 0,
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:54:39.233Z"
+    },
+    {
+      "id": 19,
+      "title": "Clarify DESIGN.md and add .gitignore entry",
+      "description": "Add one sentence to docs/DESIGN.md distinguishing root requirements.md (product PRD for this MCP) from .ralph/prd.md (target repo SoT), and add ralph/task-status.json to the root .gitignore so it stays local-only.",
+      "status": "backlog",
+      "devIterations": 0,
+      "createdAt": "2026-04-01T14:44:57.954Z",
+      "updatedAt": "2026-04-01T14:54:39.233Z"
     }
   ],
-  "currentTaskNum": 7,
-  "totalLLMCalls": 17,
+  "currentTaskNum": 15,
+  "totalLLMCalls": 4,
   "maxLLMCalls": 500,
   "nextTask": {
-    "taskId": 7,
-    "content": "Now I have all the context I need. Let me produce the output.\n\n```json\n[\n  { \"id\": 7, \"title\": \"Test logging and epic plan tools\", \"description\": \"appendProgress, appendLearning, and writeEpicPlan tool functions in tools.ts are untested at the tool interface level. Add tests verifying timestamp formatting in progress entries, section heading in learning entries, and epic_plan.md write behavior.\", \"status\": \"backlog\" }\n]\n```\n\n---\n\n## Task 7 -- Test Logging and Epic Plan Tools\n\n### What and Why\n\nThree exported tool functions in `src/tools.ts` lack any tool-level test coverage:\n\n- `appendProgress(entry: string)` -- appends a timestamped line to `.ralph/logs/progress.txt`. The timestamp must be ISO-8601 UTC without milliseconds: `[YYYY-MM-DDTHH:MM:SSZ]` (NFR-06 / FR-14).\n- `appendLearning(title: string, body: string)` -- appends a new `## <timestamp>: <title>` section to `.ralph/logs/learnings.md` (FR-15).\n- `writeEpicPlan(content: string)` -- writes or replaces `.ralph/epic_plan.md` (FR-16).\n\nThe existing `tests/logging_and_allowlist.test.ts` tests only the underlying `appendText` helper from `workflow.ts`, not these exported tool functions. The goal of this task is to add a dedicated test file at `tests/logging_tools.test.ts` that exercises each tool function at the tool-call boundary using a temp repo directory and `vi.spyOn(process, \"cwd\")`, matching the conventions established in `tests/task_lifecycle.test.ts`.\n\n---\n\n### Implementation Guidance\n\n**File to create:** `tests/logging_tools.test.ts`\n\n**Imports needed:**\n\n```ts\nimport { describe, expect, it, afterEach, vi } from \"vitest\";\nimport fs from \"node:fs/promises\";\nimport path from \"node:path\";\nimport os from \"node:os\";\nimport { appendProgress, appendLearning, writeEpicPlan } from \"../src/tools.js\";\n```\n\n**Helper to create a temp repo with `.ralph/logs/` pre-created:**\n\n```ts\nasync function makeTempRepo(): Promise<string> {\n  const dir = await fs.mkdtemp(path.join(os.tmpdir(), \"ralph-logging-\"));\n  await fs.writeFile(path.join(dir, \"package.json\"), \"{}\", \"utf8\");\n  await fs.mkdir(path.join(dir, \".ralph\", \"logs\"), { recursive: true });\n  return dir;\n}\n```\n\nEach `describe` block must use an `afterEach` that restores mocks and removes the temp dir, matching the pattern in `task_lifecycle.test.ts`.\n\n---\n\n**appendProgress -- test cases:**\n\n| Case | Setup | Assertion |\n| --- | --- | --- |\n| Appends timestamped entry to existing log file | Create an empty `progress.txt`, call `appendProgress(\"started work\")` | File content matches `/^\\[\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z\\] started work\\n$/` |\n| Trims whitespace from entry | Call with `\"  padded  \"` | Stored line contains `] padded\\n` (no leading/trailing spaces in the entry portion) |\n| Creates file if absent | Do not create `progress.txt` beforehand | After call, file exists and content matches timestamp pattern |\n| Accumulates multiple entries | Call twice | File contains two lines, each with a `[...Z]` prefix |\n| Returns `{ ok: true }` | Call with any string | Return value is `{ ok: true }` |\n\nTimestamp format regex: `/^\\[\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z\\]/`. Do NOT assert the exact timestamp value (it is time-dependent); only assert the format and the entry text.\n\n---\n\n**appendLearning -- test cases:**\n\n| Case | Assertion |\n| --- | --- |\n| Writes section heading with timestamp | File content matches `/## \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z:/` |\n| Heading includes the title | Heading line includes the exact title string |\n| Body appears after heading | Content after the heading contains the body text |\n| Trims whitespace from title and body | Leading/trailing spaces stripped from both |\n| Creates learnings.md if absent | File is created when it does not exist |\n| Accumulates sections | Two calls produce two `##` headings in the file |\n| Returns `{ ok: true }` | Return value is `{ ok: true }` |\n\n---\n\n**writeEpicPlan -- test cases:**\n\n| Case | Assertion |\n| --- | --- |\n| Writes content to `.ralph/epic_plan.md` | File at `.ralph/epic_plan.md` matches written content (with trailing newline) |\n| Adds trailing newline when absent | Content without `\\n` at end -- file ends with `\\n` |\n| Preserves trailing newline when present | Content already ending in `\\n` -- file does not double the newline |\n| Overwrites existing file | Write once, then write again with different content -- second content wins |\n| Creates `.ralph/` directory if absent | Remove `.ralph/` dir, call `writeEpicPlan` -- file is created successfully |\n| Returns `{ ok: true, path: \".ralph/epic_plan.md\" }` | Exact return value shape |\n\n---\n\n**Conventions to follow (from `task_lifecycle.test.ts`):**\n\n- Use `vi.spyOn(process, \"cwd\").mockReturnValue(tmpDir)` before each tool call.\n- Call `vi.restoreAllMocks()` in `afterEach`.\n- Each `describe` block has its own `let tmpDir: string` and cleans up with `fs.rm(tmpDir, { recursive: true, force: true })`.\n- Use `expect(result.ok).toBe(true)` (not `toBeTruthy()`).\n- All tests are `async it` blocks.\n\n---\n\n### Testing Steps\n\nAfter implementing `tests/logging_tools.test.ts`, run:\n\n```bash\nnpm run --prefix C:\\Users\\ROY28095\\mcp\\ralph_loop_mcp test\n```\n\n- Confirm `logging_tools.test.ts` appears in Vitest output with all tests green.\n- Confirm no regressions in the 6 other test files.\n- Exit code must be 0.\n\n---\n\n### Acceptance Criteria\n\n- `tests/logging_tools.test.ts` exists and is automatically discovered by Vitest.\n- No changes to `src/` files are required (all three tool functions are already exported).\n- At minimum 14 test cases pass across three `describe` blocks: 5 for `appendProgress`, 7 for `appendLearning`, and 6 for `writeEpicPlan`.\n- Timestamp format in `appendProgress` entries is validated by regex against NFR-06 (`[YYYY-MM-DDTHH:MM:SSZ]`), not by exact value.\n- Timestamp format in `appendLearning` headings is validated by regex.\n- All tests use `vi.spyOn(process, \"cwd\")` and clean up temp dirs in `afterEach`.\n- `npm run test` exits 0 with no regressions across the full suite.\n\n---\n\n## Remaining Planned Tasks\n- Test logging and epic plan tools\n\n<task-id>7</task-id>\n\nAll 130 tests pass (18 new tests in `logging_tools.test.ts`, 5 for `appendProgress`, 7 for `appendLearning`, 6 for `writeEpicPlan`). No regressions.\n\n",
-    "updatedAt": "2026-03-31T23:38:38.293Z"
+    "taskId": 15,
+    "content": "I now have full context. Task 14 (README fix) is done. Remaining tasks are 15-19 as recorded. The next task is **15: Add Vitest globalSetup for integration tests**.\n\n```json\n[\n  { \"id\": 15, \"title\": \"Add Vitest globalSetup for integration tests\", \"description\": \"Add a Vitest globalSetup module that runs tsc once before the suite so dist/index.js exists when integration tests spawn the server. Update vitest config and package.json as needed so npm test remains a single command.\", \"status\": \"backlog\" },\n  { \"id\": 16, \"title\": \"Add stdio MCP happy-path integration tests\", \"description\": \"Add tests/mcp_stdio.integration.test.ts that spawns dist/index.js with the MCP SDK stdio client against a temp repo, asserts tools/list returns all expected tool names, and exercises the generate_phase1 + read_state chain verifying artifacts on disk.\", \"status\": \"backlog\" },\n  { \"id\": 17, \"title\": \"Add full-cycle Phase 1-2-3 E2E test\", \"description\": \"Extend the stdio integration suite with a full-cycle test on a dummy project: Phase 1 (generate_phase1, write_prd), Phase 2 (generate_phase2, upsert_spec, replace_fix_plan), Phase 3 (generate_phase3, next_task, run_verification, set_task_status, next_task returns empty).\", \"status\": \"backlog\" },\n  { \"id\": 18, \"title\": \"Add negative MCP integration tests\", \"description\": \"Add negative/edge-case MCP tests via the same stdio spawn pattern: unknown tool name, generate_phase3 without fix_plan.md present, write_plan with a path outside .github/plans/, and read_file for a missing file; assert structured error responses in each case.\", \"status\": \"backlog\" },\n  { \"id\": 19, \"title\": \"Clarify DESIGN.md and add .gitignore entry\", \"description\": \"Add one sentence to docs/DESIGN.md distinguishing root requirements.md (product PRD for this MCP) from .ralph/prd.md (target repo SoT), and add ralph/task-status.json to the root .gitignore so it stays local-only.\", \"status\": \"backlog\" }\n]\n```\n\n---\n\n## Task 15: Add Vitest globalSetup for Integration Tests\n\n### What needs to be done and why it matters\n\nThe existing test suite exercises all tool logic through direct function imports -- no subprocess is ever spawned. The upcoming integration tests (tasks 16-18) will spawn `node dist/index.js` as a real MCP server process. That binary only exists after `tsc` compiles the sources. Without a build step wired into the test runner, a fresh clone will fail those tests unless the developer remembers to run `npm run build` first.\n\nA Vitest `globalSetup` module solves this cleanly: it runs exactly once before the entire suite, compiles the project if `dist/index.js` is absent or stale, and lets `npm test` remain the single command for both unit and integration tests.\n\nThis task corresponds to NFR-08 (single `npm test` command must pass) and is the prerequisite for tasks 16, 17, and 18.\n\n### Implementation guidance\n\n**1. Create `tests/globalSetup.ts`**\n\n- Export a default async function (the Vitest `globalSetup` shape).\n- Inside it, check whether `dist/index.js` already exists (use `fs.existsSync` from `node:fs`).\n- If it does not exist, spawn `tsc -p tsconfig.json` synchronously using `execSync` from `node:child_process` with `stdio: 'inherit'` so compile errors surface in the terminal.\n- If `dist/index.js` does exist, skip the build (keep `npm test` fast on repeated runs).\n- Do not add a teardown -- no cleanup is needed.\n\n**2. Add `vitest.config.ts` at the project root**\n\nSince there is currently no vitest config file, create one. It must:\n- Import `defineConfig` from `vitest/config`.\n- Set `test.globalSetup` to `['./tests/globalSetup.ts']`.\n- Optionally set `test.include` to the existing default (`['tests/**/*.test.ts']`) so behavior is unchanged for existing unit tests.\n- Keep `test.environment` unset (default `node` is correct).\n\nExample shape (do not copy verbatim -- adapt to the project's existing patterns):\n\n```ts\n// vitest.config.ts\nimport { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: { globalSetup: ['./tests/globalSetup.ts'] } });\n```\n\n**3. Verify `package.json` does not need changes**\n\nThe existing `\"test\": \"vitest --run\"` script in `package.json` will automatically pick up `vitest.config.ts`. No change to `package.json` is required unless the config file name needs to be specified explicitly (it does not; Vitest discovers `vitest.config.ts` by convention).\n\n**4. Keep existing test behavior intact**\n\n- All existing unit tests use a `tests/setup.ts` (Vitest `setupFiles` pattern or direct imports). Do not change any import or setup in existing test files.\n- The globalSetup only ensures `dist/` is built; it does not affect how unit tests are isolated or how `process.cwd()` is mocked.\n\n### Testing steps\n\n1. Delete or rename `dist/` to confirm the globalSetup rebuilds it:\n   ```\n   Remove-Item -Recurse -Force dist\n   npm test\n   ```\n   - Verify `tsc` output is printed at the start of the run.\n   - Verify all existing tests still pass (168 tests expected).\n   - Verify `dist/index.js` exists after the run.\n\n2. Run `npm test` a second time without deleting `dist/`:\n   - Verify `tsc` is **not** run again (the skip-if-exists branch fires).\n   - All existing tests still pass.\n\n3. Introduce a deliberate TypeScript error in `src/index.ts`, delete `dist/`, then run `npm test`:\n   - Verify the compile error surfaces in the terminal and the test run aborts.\n   - Revert the deliberate error afterward.\n\n### Acceptance criteria\n\n- `vitest.config.ts` exists at the project root and registers `tests/globalSetup.ts` as the `globalSetup` module.\n- `tests/globalSetup.ts` compiles `dist/index.js` when it is absent, skips the build when it already exists.\n- `npm test` passes with all existing unit tests green on a clean working tree (no pre-existing `dist/`).\n- `npm test` passes a second time without re-running `tsc`.\n- No existing test file is modified.\n- `package.json` `\"test\"` script remains `\"vitest --run\"` (no change required).\n\n---\n\n## Remaining Planned Tasks\n- Add Vitest globalSetup for integration tests\n- Add stdio MCP happy-path integration tests\n- Add full-cycle Phase 1-2-3 E2E test\n- Add negative MCP integration tests\n- Clarify DESIGN.md and add .gitignore entry\n\n<task-id>15</task-id>\n\nNow delete `dist/` and run the tests to verify the globalSetup rebuilds it and all tests pass:\n\nAll 168 tests pass. The globalSetup triggered the build (`dist/index.js not found -- running tsc...`) and then the full suite ran clean. Let me do a quick second run to confirm the skip-if-exists branch works:\n\nSecond run: no `[globalSetup]` build output, and the suite completed in 1.25s vs 19s (no compile step). Both behaviors confirmed.\n\n",
+    "updatedAt": "2026-04-01T14:54:39.269Z"
   },
   "feedback": {
-    "taskId": 7,
+    "taskId": 15,
     "content": "",
-    "updatedAt": "2026-03-31T23:38:38.309Z"
+    "updatedAt": "2026-04-01T14:54:39.304Z"
   },
-  "lastUpdated": "2026-03-31T23:38:38.309Z"
+  "lastUpdated": "2026-04-01T14:54:39.304Z"
 }

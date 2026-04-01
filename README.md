@@ -6,6 +6,8 @@ This MCP server turns the repo's `.ralph/` folder into a 3-phase workflow:
 - **Phase 2**: Generate/refine specs under `.ralph/specs/**` and tasks in `.ralph/fix_plan.md`.
 - **Phase 3**: Iterate one task at a time with strict verification (npm run ci + npm run test:e2e).
 
+See [requirements.md](requirements.md) for the product requirements and [docs/DESIGN.md](docs/DESIGN.md) for architecture and positioning.
+
 ## Phase 1 generator script
 
 `ralph.generate_phase1` bootstraps `.ralph/phase1.sh` and seeds `.github/plans/project-plan.md` when missing.
@@ -48,14 +50,26 @@ Artifacts created:
 - `.ralph/phase3-dev-signoff-prompt.md`
 - `.ralph/phase3-qa-prompt.md`
 - `.ralph/phase3-qa-close-prompt.md`
-- `.ralph/phase3-feedback.md`
+- `.ralph/logs/phase3-feedback.md`
 
 - Run directly: `bash ./.ralph/phase3.sh`
 - Run via MCP tool: `ralph.generate_phase3`
 
+## Prerequisites
+
+- Node.js 20 or later
+- npm
+- Build the package before running or testing (see Build section below)
+
 ## Install
 
-From repo root:
+**Standalone** (this repo cloned directly as the package root):
+
+```bash
+npm install
+```
+
+**Nested** (package embedded under a parent monorepo, e.g. at `./mcp/ralph_loop_mcp`):
 
 ```bash
 npm install --prefix ./mcp/ralph_loop_mcp
@@ -63,11 +77,27 @@ npm install --prefix ./mcp/ralph_loop_mcp
 
 ## Build
 
+**Standalone:**
+
+```bash
+npm run build
+```
+
+**Nested:**
+
 ```bash
 npm run --prefix ./mcp/ralph_loop_mcp build
 ```
 
 ## Run (stdio)
+
+**Standalone:**
+
+```bash
+node dist/index.js
+```
+
+**Nested:**
 
 ```bash
 node ./mcp/ralph_loop_mcp/dist/index.js
@@ -75,7 +105,23 @@ node ./mcp/ralph_loop_mcp/dist/index.js
 
 ## VS Code MCP registration
 
-Example configuration (you must have the repo folder opened in VS Code for `${workspaceFolder}` to resolve):
+Set `cwd` to the **target project** -- the repo whose `.ralph/` folder the server will manage. This is typically the project you are actively developing, not the directory where this MCP package lives.
+
+Example configuration for a standalone clone (open the target project folder in VS Code so `${workspaceFolder}` resolves to it):
+
+```json
+{
+  "mcpServers": {
+    "ralph-loop": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}
+```
+
+Example for a nested layout where the package lives at `./mcp/ralph_loop_mcp` inside the target project:
 
 ```json
 {
@@ -89,7 +135,19 @@ Example configuration (you must have the repo folder opened in VS Code for `${wo
 }
 ```
 
-If VS Code reports `${workspaceFolder}` cannot be resolved, open the repository with File -> Open Folder..., or set `cwd` to an absolute path.
+If VS Code reports `${workspaceFolder}` cannot be resolved, open the repository with File -> Open Folder..., or set `cwd` to an absolute path pointing at the target project root.
+
+## Verification prereqs
+
+`ralph.run_verification` runs `npm run ci` followed by `npm run test:e2e` on the **target repo** (the project under `cwd`). Both scripts must be defined in that repo's `package.json`, or the tool will reject them by design.
+
+To extend the allowlist for additional scripts, add an `allowedNpmScripts` array to `.ralph/config.json` in the target repo:
+
+```json
+{
+  "allowedNpmScripts": ["lint", "type-check"]
+}
+```
 
 ## Conventions
 
@@ -101,6 +159,16 @@ If VS Code reports `${workspaceFolder}` cannot be resolved, open the repository 
 
 ## Dev tests
 
+**Standalone:**
+
+```bash
+npm test
+```
+
+**Nested:**
+
 ```bash
 npm run --prefix ./mcp/ralph_loop_mcp test
 ```
+
+> Note: Run `npm run build` before running tests for the first time so `dist/index.js` exists for integration tests.

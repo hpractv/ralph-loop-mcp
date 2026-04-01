@@ -199,4 +199,27 @@ describe("writePrd", () => {
     const c = await fs.readFile(path.join(tmpDir, ".ralph", "prd.md"), "utf8");
     expect(c).toContain("# PRD");
   });
+
+  it("adds trailing newline when content has none (NFR-05)", async () => {
+    tmpDir = await makeTempRepo();
+    await fs.mkdir(path.join(tmpDir, ".ralph"), { recursive: true });
+    vi.spyOn(process, "cwd").mockReturnValue(tmpDir);
+
+    await writePrd("# PRD content without newline");
+
+    const c = await fs.readFile(path.join(tmpDir, ".ralph", "prd.md"), "utf8");
+    expect(c.endsWith("\n")).toBe(true);
+  });
+
+  it("does not double newline when content already ends with one (NFR-05)", async () => {
+    tmpDir = await makeTempRepo();
+    await fs.mkdir(path.join(tmpDir, ".ralph"), { recursive: true });
+    vi.spyOn(process, "cwd").mockReturnValue(tmpDir);
+
+    await writePrd("# PRD with newline\n");
+
+    const c = await fs.readFile(path.join(tmpDir, ".ralph", "prd.md"), "utf8");
+    expect(c).toBe("# PRD with newline\n");
+    expect(c.endsWith("\n\n")).toBe(false);
+  });
 });
