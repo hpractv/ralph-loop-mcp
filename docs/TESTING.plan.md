@@ -1,6 +1,6 @@
 ---
 name: MCP alignment tests README
-overview: Assess alignment of the implementation and [requirements.md](requirements.md) with [docs/DESIGN.md](docs/DESIGN.md), then add stdio-based MCP integration tests (happy path + negative cases), and refresh [README.md](README.md) for accurate setup, usage, and documentation links—including fixing the phase3-feedback path and standalone vs nested repo layouts.
+overview: Assess alignment of the implementation and [requirements.md](../requirements.md) with [docs/DESIGN.md](DESIGN.md), then add stdio-based MCP integration tests (happy path + negative cases), and refresh [README.md](../README.md) for accurate setup, usage, and documentation links—including fixing the phase3-feedback path and standalone vs nested repo layouts.
 todos:
   - id: readme-fix
     content: "Update README: DESIGN/requirements links, standalone vs nested paths, cwd for MCP host, phase3-feedback path, verification prereqs"
