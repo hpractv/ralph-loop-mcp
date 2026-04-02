@@ -6,7 +6,7 @@ This MCP server turns the repo's `.ralph/` folder into a 3-phase workflow:
 - **Phase 2**: Generate/refine specs under `.ralph/specs/**` and tasks in `.ralph/fix_plan.md`.
 - **Phase 3**: Iterate one task at a time with strict verification (npm run ci + npm run test:e2e).
 
-See [requirements.md](requirements.md) for the product requirements and [docs/DESIGN.md](docs/DESIGN.md) for architecture and positioning.
+See [docs/DESIGN.md](docs/DESIGN.md) for architecture and positioning.
 
 ## Phase 1 generator script
 
