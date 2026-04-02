@@ -80,7 +80,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist # dist should be built and distrubuted
 
 # Gatsby files
 .cache/
@@ -137,3 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Loop engine meta state -- local only
+ralph/
+requirements*.md
